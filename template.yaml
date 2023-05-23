@@ -1,27 +1,26 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  device-authentication
+  device-authenticate
 
-  Sample SAM Template for device-authentication
+  Sample SAM Template for device-authenticate
   
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
-    MemorySize: 128
 
 Resources:
-  DeviceAuthenticationFunction:
+  DeviceAuthenticateFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: device-authentication/
-      Handler: dist/index.lambdaHandler
+      CodeUri: src/
+      Handler: app.lambdaHandler
       Runtime: nodejs14.x
       Architectures:
         - x86_64
       Events:
-        DeviceAuthentication:
+        DeviceAuthenticate:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /device-authenticate
@@ -31,20 +30,24 @@ Resources:
       BuildProperties:
         Minify: true
         Target: "es2020"
-        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        Sourcemap: true
         EntryPoints: 
         - app.ts
+        # External:
+        #   - "aws-sdk"
+        #   - "crypto"
+
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  DeviceAuthenticationApi:
-    Description: "API Gateway endpoint URL for Prod stage for Device Authentication function"
+  DeviceAuthenticateApi:
+    Description: "API Gateway endpoint URL for Prod stage for Device Authenticat function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/device-authenticate/"
-  DeviceAuthenticationFunction:
-    Description: "Device Authentication"
-    Value: !GetAtt DeviceAuthentication.Arn
-  DeviceAuthenticationFunctionIamRole:
-    Description: "Implicit IAM Role created for Device Authentication function"
-    Value: !GetAtt DeviceAuthenticationRole.Arn
+  DeviceAuthenticateFunction:
+    Description: "Device Authenticat Lambda Function ARN"
+    Value: !GetAtt DeviceAuthenticateFunction.Arn
+  DeviceAuthenticateFunctionIamRole:
+    Description: "Implicit IAM Role created for Device Authenticat function"
+    Value: !GetAtt DeviceAuthenticateFunctionRole.Arn
